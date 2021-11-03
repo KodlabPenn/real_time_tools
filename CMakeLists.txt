@@ -24,9 +24,6 @@ endif()
 #
 
 # Usual dependencies
-find_package(mpi_cmake_modules REQUIRED)
-find_package(pybind11 REQUIRED)
-find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem)
 find_package(Threads REQUIRED)
 
@@ -36,8 +33,8 @@ find_package(Threads REQUIRED)
 
 # This macro sets the C++ preprocessor flags "XENOMAI", "RT_PREEMPT", or
 # "UBUNTU" according to the current operating system.
-define_os()
-set(all_targets)
+set(CURRENT_OS "rt-preempt")
+add_definitions("-DRT_PREEMPT")
 
 #
 # Add the main library
@@ -104,56 +101,6 @@ add_real_time_tools_demo(demo_checkpoint_timer)
 # ${PROJECT_NAME} ${catkin_LIBRARIES})
 
 #
-# Python wrapper.
-#
-add_library(${PROJECT_NAME}_cpp_bindings MODULE srcpy/real_time_tools.cpp)
-target_link_libraries(${PROJECT_NAME}_cpp_bindings PRIVATE pybind11::module)
-target_link_libraries(${PROJECT_NAME}_cpp_bindings PRIVATE ${PYTHON_LIBRARIES})
-target_link_libraries(${PROJECT_NAME}_cpp_bindings PRIVATE ${PROJECT_NAME})
-set_target_properties(${PROJECT_NAME}_cpp_bindings
-                      PROPERTIES PREFIX "" SUFFIX "${PYTHON_MODULE_EXTENSION}")
-target_include_directories(
-  ${PROJECT_NAME}_cpp_bindings
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-         $<INSTALL_INTERFACE:include> SYSTEM
-  PUBLIC ${PYTHON_INCLUDE_DIRS})
-get_python_install_dir(python_install_dir)
-install(TARGETS ${PROJECT_NAME}_cpp_bindings DESTINATION ${python_install_dir})
-install(FILES srcpy/__init__.py
-        DESTINATION ${python_install_dir}/${PROJECT_NAME})
-
-#
-# Add unit tests.
-#
-include(CTest)
-if(BUILD_TESTING)
-  # C++ unit-tests framework used.
-  find_package(GTest CONFIG REQUIRED)
-  include(GoogleTest)
-  # Config folder
-  get_filename_component(CONFIG_PATH config ABSOLUTE)
-  # create the executable
-  add_executable(
-    test_real_time_tools
-    tests/main.cpp tests/test_real_time_tools.cpp
-    tests/threadsafe_object_test.cpp)
-  # link to the created librairies and its dependencies
-  target_link_libraries(test_real_time_tools ${PROJECT_NAME} GTest::gtest)
-  # create 2 macro: the path to the config file and the path to the data file
-  target_compile_definitions(
-    test_real_time_tools
-    PUBLIC
-    PUBLIC TEST_CONFIG_FOLDER="${TEST_CONFIG_PATH}")
-  # declare the test as gtest
-  gtest_add_tests(TARGET test_real_time_tools)
-endif()
-
-#
-# building documentation
-#
-add_documentation()
-
-#
 # Install the package
 #
 
@@ -170,5 +117,3 @@ install(
   INCLUDES
   DESTINATION include)
 
-# Export this package as a cmake package.
-generate_cmake_package()
