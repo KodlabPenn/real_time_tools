@@ -28,7 +28,7 @@ namespace real_time_tools
 /**
  * @brief Class to have threads / loops running at a desired frequency
  */
-class HardSpinner: Spinner
+class HardSpinner: public Spinner
 {
  public:
   // create a spinner for the desired frequency
