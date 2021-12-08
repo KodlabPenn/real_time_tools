@@ -42,7 +42,7 @@ add_definitions("-DRT_PREEMPT")
 
 # Create the CMake target
 add_library(
-  ${PROJECT_NAME} SHARED
+  ${PROJECT_NAME} STATIC
   src/realtime_check.cpp
   src/thread.cpp
   src/spinner.cpp
