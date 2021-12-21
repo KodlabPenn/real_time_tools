@@ -18,23 +18,28 @@ namespace real_time_tools
 {
 Spinner::Spinner()
 {
-    period_sec_ = 0.0;
-    next_date_sec_ = Timer::get_current_time_sec() + period_sec_;
+    next_date_timespec_ = timespec_add(Timer::get_current_time(), period_timespec_);
 }
 
 void Spinner::initialize()
 {
-    next_date_sec_ = Timer::get_current_time_sec() + period_sec_;
+    next_date_timespec_ = timespec_add(Timer::get_current_time(), period_timespec_);
 }
 
 void Spinner::spin()
 {
-    Timer::sleep_until_sec(next_date_sec_);
-    next_date_sec_ = Timer::get_current_time_sec() + period_sec_;
+    Timer::sleep_until_timespec(next_date_timespec_);
+    next_date_timespec_ = timespec_add(Timer::get_current_time(), period_timespec_);
 }
 
 double Spinner::predict_sleeping_time()
 {
-    return next_date_sec_ - Timer::get_current_time_sec();
+    return timespec_to_double(timespec_sub(next_date_timespec_, Timer::get_current_time()));
 }
+
+float Spinner::predict_sleeping_time_micro()
+{
+  return timespec_to_micros_float(timespec_sub(next_date_timespec_, Timer::get_current_time()));
+}
+
 }  // namespace real_time_tools

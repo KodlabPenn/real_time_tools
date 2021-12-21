@@ -51,7 +51,8 @@ add_library(
   src/iostream.cpp
   src/usb_stream.cpp
   src/process_manager.cpp
-  src/frequency_manager.cpp)
+  src/frequency_manager.cpp
+  src/timespec.c)
 # Add the include dependencies
 target_include_directories(
   ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

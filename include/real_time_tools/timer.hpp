@@ -19,7 +19,7 @@
 #include <string>
 
 #include "real_time_tools/iostream.hpp"
-
+#include "real_time_tools/timespec.h"
 namespace real_time_tools
 {
 /**
@@ -42,16 +42,16 @@ public:
 
     /**
      * @brief tac is to be used after tic has been called.
-     * @return the duration in seconds between the call of tic() and the call of
+     * @return the duration in micro seconds between the call of tic() and the call of
      * tac(). if tic() has not been called previously this will return nan
      */
-    double tac();
+    float tac();
 
     /**
      * @brief this is like a tac() followed by a tic(), making sure the
      * previous tac_time becomes the tic_time
      */
-    double tac_tic();
+    float tac_tic();
 
     /**
      * @brief Save the time interval measured
@@ -148,7 +148,7 @@ protected:
     /**
      * @brief tic_time_ time at which tic() was called
      */
-    double tic_time_;
+    timespec tic_time_;
 
     /**
      * @brief time_measurement_buffer_ this is a chained list of double
@@ -196,6 +196,13 @@ protected:
      * Some utilities
      */
 public:
+   /**
+    * @brief get_current_time gives the current time as a timespec
+    * @return
+    */
+    static timespec get_current_time();
+
+
     /**
      * @brief get_current_time_sec gives the current time in double and in
      * seconds
@@ -244,6 +251,13 @@ public:
      * @param date_sec is the date until when to sleep in seconds.
      */
     static void sleep_until_sec(const double& date_sec);
+
+  /**
+    * @brief sleep_until_timespec puts the threads to sleep until the date
+    * "date" is reached.
+    * @param date is the date until when to sleep in timespec.
+    */
+    static void sleep_until_timespec(const timespec& date);
 
 #ifndef MAC_OS
     /**

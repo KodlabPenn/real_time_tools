@@ -14,6 +14,7 @@
 
 #include <unistd.h>
 #include <chrono>
+#include "real_time_tools/timespec.h"
 
 namespace real_time_tools
 {
@@ -32,7 +33,7 @@ public:
      */
     void set_period(double period)
     {
-        period_sec_ = period;
+      period_timespec_ = timespec_from_double( period);
     }
 
     /**
@@ -42,7 +43,7 @@ public:
      */
     void set_frequency(double frequency)
     {
-        period_sec_ = 1.0 / frequency;
+      period_timespec_ = timespec_from_double(1.0 / frequency);
     }
 
     /**
@@ -62,16 +63,21 @@ public:
      */
     double predict_sleeping_time();
 
-protected:
+   /**
+    * @brief Predict the time the current thread is going to sleep.
+    */
+  float predict_sleeping_time_micro();
+
+ protected:
     /**
-     * @brief period_sec_ is the period of the loop in seconds
+     * @brief period_timespec_ is the period of the loop in seconds
      */
-    double period_sec_;
+    timespec period_timespec_;
 
     /**
-     * @brief next_date_sec_ is the date when the loop needs to wake up.
+     * @brief next_date_timespec_ is the date when the loop needs to wake up.
      */
-    double next_date_sec_;
+    timespec next_date_timespec_;
 };
 
 }  // namespace real_time_tools

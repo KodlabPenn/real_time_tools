@@ -19,8 +19,9 @@ HardSpinner::HardSpinner()
 
 void HardSpinner::spin()
 {
-  Timer::sleep_until_sec(next_date_sec_);
-  next_date_sec_ = next_date_sec_ + period_sec_;
+  if(predict_sleeping_time() > 0)
+    Timer::sleep_until_timespec(next_date_timespec_);
+  next_date_timespec_ = timespec_add(next_date_timespec_ ,period_timespec_);
 }
 
 }  // namespace real_time_tools

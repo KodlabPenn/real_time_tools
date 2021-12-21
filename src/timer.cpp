@@ -45,7 +45,7 @@ std::string Timer::get_current_date_str()
 Timer::Timer()
 {
     // initialize the tic and tac times by the current time
-    tic_time_ = std::numeric_limits<double>::quiet_NaN();
+    tic_time_ = Timer::get_current_time();
     // initialize the memory buffer size, allocate memory and set counter to
     // zero.
     set_memory_size(60000);
@@ -62,29 +62,28 @@ Timer::Timer()
 void Timer::tic()
 {
     // get the current time
-    tic_time_ = Timer::get_current_time_sec();
+    tic_time_ = Timer::get_current_time();
 }
 
-double Timer::tac()
+float Timer::tac()
 {
-    double tac_time = Timer::get_current_time_sec();
-    double time_interval = tac_time - tic_time_;
+    auto tac_time = Timer::get_current_time();
+    auto time_interval = timespec_sub(tac_time, tic_time_);
 
-    log_time_interval(time_interval);
+    log_time_interval(timespec_to_double(time_interval));
 
-    return time_interval;
+    return timespec_to_micros_float(time_interval);
 }
 
-double Timer::tac_tic()
+float Timer::tac_tic()
 {
-    double tac_time = Timer::get_current_time_sec();
-    double time_interval = tac_time - tic_time_;
-
-    log_time_interval(time_interval);
+    auto tac_time = Timer::get_current_time();
+    auto time_interval = timespec_sub(tac_time, tic_time_);
+    log_time_interval(timespec_to_double(time_interval));
 
     tic_time_ = tac_time;
 
-    return time_interval;
+    return timespec_to_micros_float(time_interval);
 }
 
 void Timer::log_time_interval(double time_interval)
@@ -183,6 +182,19 @@ void Timer::sec_to_timespec(double date_sec, struct timespec& date_spec)
 
 #endif
 
+timespec Timer::get_current_time()
+{
+#ifdef MAC_OS
+  throw;
+#else
+  struct timespec now;
+  clock_gettime(CLOCK_REALTIME, &now);
+  return now;
+#endif
+}
+
+
+
 double Timer::get_current_time_sec()
 {
 #ifdef MAC_OS
@@ -228,6 +240,10 @@ void Timer::sleep_until_sec(const double& date_sec)
     sec_to_timespec(date_sec, abs_target_time);
     clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &abs_target_time, nullptr);
 #endif
+}
+
+void Timer::sleep_until_timespec(const timespec &date) {
+  clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &date, nullptr);
 }
 
 }  // namespace real_time_tools
