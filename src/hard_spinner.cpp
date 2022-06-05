@@ -19,9 +19,12 @@ HardSpinner::HardSpinner()
 
 void HardSpinner::spin()
 {
-  if(predict_sleeping_time() > 0)
+  if(predict_sleeping_time() > 0){
     Timer::sleep_until_timespec(next_date_timespec_);
-  next_date_timespec_ = timespec_add(next_date_timespec_ ,period_timespec_);
+    next_date_timespec_ = timespec_add(next_date_timespec_ ,period_timespec_);
+  }else{
+    next_date_timespec_ = timespec_add(Timer::get_current_time(), period_timespec_);
+  }
 }
 
 }  // namespace real_time_tools
