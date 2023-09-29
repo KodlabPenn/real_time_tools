@@ -33,8 +33,14 @@ find_package(Threads REQUIRED)
 
 # This macro sets the C++ preprocessor flags "XENOMAI", "RT_PREEMPT", or
 # "UBUNTU" according to the current operating system.
+
+if (Simulation)     
+set(CURRENT_OS "ubuntu")
+add_definitions("-DNON_REAL_TIME")
+else()
 set(CURRENT_OS "rt-preempt")
 add_definitions("-DRT_PREEMPT")
+endif()
 
 #
 # Add the main library
